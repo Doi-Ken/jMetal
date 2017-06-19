@@ -25,6 +25,9 @@ public interface Solution<T> extends Serializable {
   public void setObjective(int index, double value) ;
   public double getObjective(int index) ;
 
+  public void setNormalizedObjective(int index, double value) ;
+  public double getNormalizedObjective(int index) ;
+
   public T getVariableValue(int index) ;
   public void setVariableValue(int index, T value) ;
   public String getVariableValueString(int index) ;

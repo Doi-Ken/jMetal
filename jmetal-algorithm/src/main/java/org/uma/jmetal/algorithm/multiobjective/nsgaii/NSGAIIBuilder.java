@@ -1,5 +1,7 @@
 package org.uma.jmetal.algorithm.multiobjective.nsgaii;
 
+import java.util.List;
+
 import org.uma.jmetal.operator.CrossoverOperator;
 import org.uma.jmetal.operator.MutationOperator;
 import org.uma.jmetal.operator.SelectionOperator;
@@ -11,8 +13,6 @@ import org.uma.jmetal.util.JMetalException;
 import org.uma.jmetal.util.comparator.RankingAndCrowdingDistanceComparator;
 import org.uma.jmetal.util.evaluator.SolutionListEvaluator;
 import org.uma.jmetal.util.evaluator.impl.SequentialSolutionListEvaluator;
-
-import java.util.List;
 
 /**
  * @author Antonio J. Nebro <antonio@lcc.uma.es>
@@ -30,6 +30,7 @@ public class NSGAIIBuilder<S extends Solution<?>> implements AlgorithmBuilder<NS
   private MutationOperator<S> mutationOperator;
   private SelectionOperator<List<S>, S> selectionOperator;
   private SolutionListEvaluator<S> evaluator;
+  private String normalization;
 
   private NSGAIIVariant variant;
 
@@ -98,6 +99,7 @@ public class NSGAIIBuilder<S extends Solution<?>> implements AlgorithmBuilder<NS
     if (variant.equals(NSGAIIVariant.NSGAII)) {
       algorithm = new NSGAII<S>(problem, maxEvaluations, populationSize, crossoverOperator,
           mutationOperator, selectionOperator, evaluator);
+      algorithm.setNormalization(normalization);
     } else if (variant.equals(NSGAIIVariant.SteadyStateNSGAII)) {
       algorithm = new SteadyStateNSGAII<S>(problem, maxEvaluations, populationSize, crossoverOperator,
           mutationOperator, selectionOperator, evaluator);
@@ -137,4 +139,15 @@ public class NSGAIIBuilder<S extends Solution<?>> implements AlgorithmBuilder<NS
   public SolutionListEvaluator<S> getSolutionListEvaluator() {
     return evaluator;
   }
+
+  public NSGAIIBuilder<S> setNormalization(String normalization){
+	  
+	  this.normalization = normalization;
+	  return this;
+  }
+
+  public String getNormalization(){
+	  return this.normalization;
+  }
+
 }

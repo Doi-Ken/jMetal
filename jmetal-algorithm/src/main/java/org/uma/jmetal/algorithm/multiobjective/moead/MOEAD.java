@@ -54,16 +54,44 @@ public class MOEAD extends AbstractMOEAD<DoubleSolution> {
     differentialEvolutionCrossover = (DifferentialEvolutionCrossover)crossoverOperator ;
   }
 
+  public MOEAD(Problem<DoubleSolution> problem,
+	      int populationSize,
+	      int resultPopulationSize,
+	      int maxEvaluations,
+	      MutationOperator<DoubleSolution> mutation,
+	      CrossoverOperator<DoubleSolution> crossover,
+	      FunctionType functionType,
+	      String dataDirectory,
+	      double neighborhoodSelectionProbability,
+	      int maximumNumberOfReplacedSolutions,
+	      int neighborSize, int h1, int h2) {
+	    super(problem, populationSize, resultPopulationSize, maxEvaluations, crossover, mutation, functionType,
+	        dataDirectory, neighborhoodSelectionProbability, maximumNumberOfReplacedSolutions,
+	        neighborSize, h1, h2);
+
+	    differentialEvolutionCrossover = (DifferentialEvolutionCrossover)crossoverOperator ;
+	  }
+
+
   @Override public void run() {
     initializePopulation() ;
     initializeUniformWeight();
     initializeNeighborhood();
     initializeIdealPoint() ;
-
+    computeMaxPoint();
     evaluations = populationSize ;
     do {
       int[] permutation = new int[populationSize];
       MOEADUtils.randomPermutation(permutation, populationSize);
+
+      if(normalization){
+    	  computeMaxPoint();
+    	 initializeNadirPoint();
+			computeExtremePoints();
+			computeIntercepts();
+			normalizePopulation();
+      }
+
 
       for (int i = 0; i < populationSize; i++) {
         int subProblemId = permutation[i];
@@ -81,6 +109,10 @@ public class MOEAD extends AbstractMOEAD<DoubleSolution> {
         evaluations++;
 
         updateIdealPoint(child);
+        if(normalization){
+        //	initializeNormalizedObjectives();
+        	normalizeOnlyIndividual(child);
+        }
         updateNeighborhood(child, subProblemId, neighborType);
       }
     } while (evaluations < maxEvaluations);

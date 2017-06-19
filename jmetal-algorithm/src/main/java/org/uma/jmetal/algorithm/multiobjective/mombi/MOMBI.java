@@ -1,17 +1,23 @@
 package org.uma.jmetal.algorithm.multiobjective.mombi;
 
-import org.uma.jmetal.algorithm.multiobjective.mombi.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+import org.uma.jmetal.algorithm.multiobjective.gwasfga.TwoLevelWeightVectorGenerator;
+import org.uma.jmetal.algorithm.multiobjective.gwasfga.VectorGenerator;
+import org.uma.jmetal.algorithm.multiobjective.mombi.util.AbstractUtilityFunctionsSet;
+import org.uma.jmetal.algorithm.multiobjective.mombi.util.R2Ranking;
+import org.uma.jmetal.algorithm.multiobjective.mombi.util.R2RankingAttribute;
+import org.uma.jmetal.algorithm.multiobjective.mombi.util.R2SolutionData;
+import org.uma.jmetal.algorithm.multiobjective.mombi.util.TchebycheffUtilityFunctionsSet;
 import org.uma.jmetal.operator.CrossoverOperator;
 import org.uma.jmetal.operator.MutationOperator;
 import org.uma.jmetal.operator.SelectionOperator;
 import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.util.evaluator.SolutionListEvaluator;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 
 @SuppressWarnings("serial")
 public class MOMBI<S extends Solution<?>> extends AbstractMOMBI<S>{
@@ -24,15 +30,21 @@ public class MOMBI<S extends Solution<?>> extends AbstractMOMBI<S>{
 							 MutationOperator<S> mutation,
 							 SelectionOperator<List<S>, S> selection,
 							 SolutionListEvaluator<S> evaluator,
-							 String pathWeights) {
+							 String pathWeights, int div1, int div2, int ObjectiveNumber) {
 		super(problem, maxIterations, crossover, mutation, selection, evaluator);
-		utilityFunctions = this.createUtilityFunction(pathWeights);
+		VectorGenerator vg = new TwoLevelWeightVectorGenerator(div1, div2, ObjectiveNumber);
+	    double [][] weights = vg.getVectors();
+		utilityFunctions = this.createUtilityFunction(weights);
+	    //utilityFunctions = this.createUtilityFunction(pathWeights);
 	}
-	
+
 	public AbstractUtilityFunctionsSet<S> createUtilityFunction(String pathWeights) {
 		return  new TchebycheffUtilityFunctionsSet<>(pathWeights,this.getReferencePoint());
 	}
-	
+	public AbstractUtilityFunctionsSet<S> createUtilityFunction(double [][] weights) {
+		return  new TchebycheffUtilityFunctionsSet<>(weights,this.getReferencePoint());
+	}
+
 	public int getMaxPopulationSize() {
 		return this.utilityFunctions.getSize();
 	}
@@ -48,23 +60,23 @@ public class MOMBI<S extends Solution<?>> extends AbstractMOMBI<S>{
 		List<S> jointPopulation = new ArrayList<>();
 		jointPopulation.addAll(population);
 		jointPopulation.addAll(offspringPopulation);
-		
+
 		R2Ranking<S> ranking = computeRanking(jointPopulation);
 		return selectBest(ranking);
 	}
-	
+
 	protected R2Ranking<S> computeRanking(List<S> solutionList) {
 		R2Ranking<S> ranking = new R2Ranking<>(this.utilityFunctions);
 		ranking.computeRanking(solutionList);
-		
+
 		return ranking;
 	}
-	
+
 	protected void addRankedSolutionsToPopulation(R2Ranking<S> ranking, int index, List<S> population) {
 		for (S solution : ranking.getSubfront(index))
 			population.add(solution);
 	}
-	
+
 	protected void addLastRankedSolutionsToPopulation(R2Ranking<S> ranking,int index, List<S>population) {
 		List<S> front = ranking.getSubfront(index);
 		Collections.sort(front, new Comparator<S>() {
@@ -80,13 +92,13 @@ public class MOMBI<S extends Solution<?>> extends AbstractMOMBI<S>{
 				else
 					return 0;
 			}
-			
+
 		});
 		int remain = this.getMaxPopulationSize() - population.size();
 		for (S solution : front.subList(0, remain))
 			population.add(solution);
 	}
-	
+
 	protected List<S> selectBest(R2Ranking<S> ranking) {
 		List<S> population = new ArrayList<>(this.getMaxPopulationSize());
 		int rankingIndex = 0;

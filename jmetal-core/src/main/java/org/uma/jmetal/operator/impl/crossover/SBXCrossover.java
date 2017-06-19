@@ -7,11 +7,14 @@
 //  but WITHOUT ANY WARRANTY; without even the implied warranty of
 //  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //  GNU Lesser General Public License for more details.
-// 
+//
 //  You should have received a copy of the GNU Lesser General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package org.uma.jmetal.operator.impl.crossover;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.uma.jmetal.operator.CrossoverOperator;
 import org.uma.jmetal.solution.DoubleSolution;
@@ -20,9 +23,6 @@ import org.uma.jmetal.solution.util.RepairDoubleSolutionAtBounds;
 import org.uma.jmetal.util.JMetalException;
 import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 import org.uma.jmetal.util.pseudorandom.RandomGenerator;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * This class allows to apply a SBX crossover operator using two parent solutions (Double encoding).
@@ -99,7 +99,7 @@ public class SBXCrossover implements CrossoverOperator<DoubleSolution> {
   public List<DoubleSolution> execute(List<DoubleSolution> solutions) {
     if (null == solutions) {
       throw new JMetalException("Null parameter") ;
-    } else if (solutions.size() != 2) {
+    } else if (solutions.size() < 2) {
       throw new JMetalException("There must be two parents instead of " + solutions.size()) ;
     }
 

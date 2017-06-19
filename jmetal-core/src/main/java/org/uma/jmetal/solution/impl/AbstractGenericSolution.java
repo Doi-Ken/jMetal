@@ -13,11 +13,15 @@
 
 package org.uma.jmetal.solution.impl;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.util.pseudorandom.JMetalRandom;
-
-import java.util.*;
 
 /**
  * Abstract class representing a generic solution
@@ -27,6 +31,8 @@ import java.util.*;
 @SuppressWarnings("serial")
 public abstract class AbstractGenericSolution<T, P extends Problem<?>> implements Solution<T> {
   private double[] objectives;
+  private double[] normalized_objectives;
+
   private List<T> variables;
   protected P problem ;
   protected Map<Object, Object> attributes ;
@@ -41,6 +47,7 @@ public abstract class AbstractGenericSolution<T, P extends Problem<?>> implement
     randomGenerator = JMetalRandom.getInstance() ;
 
     objectives = new double[problem.getNumberOfObjectives()] ;
+    normalized_objectives = new double[problem.getNumberOfObjectives()] ;
     variables = new ArrayList<>(problem.getNumberOfVariables()) ;
     for (int i = 0; i < problem.getNumberOfVariables(); i++) {
       variables.add(i, null) ;
@@ -63,9 +70,20 @@ public abstract class AbstractGenericSolution<T, P extends Problem<?>> implement
   }
 
   @Override
+  public void setNormalizedObjective(int index, double value) {
+	  normalized_objectives[index] = value ;
+  }
+
+  @Override
   public double getObjective(int index) {
     return objectives[index];
   }
+
+  @Override
+  public double getNormalizedObjective(int index) {
+	    return normalized_objectives[index];
+  }
+
 
   @Override
   public T getVariableValue(int index) {

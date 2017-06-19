@@ -1,0 +1,1 @@
+for /L %%i in (0,1,10) do (MOEADDRATCHEBinary.jar -num %%i -pro knapsack -obj 3 -pop 91 -gen 400 -sbxeta 0.5 -muteta 20.0 -co 1.0 -mut 1.0 -k_fac 2 -l_fac 22 -k_dtlz 5 -dev1 12 -dev2 0 -knapalpha 0.4)

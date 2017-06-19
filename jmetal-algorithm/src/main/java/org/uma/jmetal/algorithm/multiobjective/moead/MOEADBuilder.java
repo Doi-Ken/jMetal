@@ -54,6 +54,10 @@ public class MOEADBuilder implements AlgorithmBuilder<AbstractMOEAD<DoubleSoluti
 
   protected Variant moeadVariant ;
 
+  protected int H1_;
+
+  protected int H2_;
+
   /** Constructor */
   public MOEADBuilder(Problem<DoubleSolution> problem, Variant variant) {
     this.problem = problem ;
@@ -69,6 +73,8 @@ public class MOEADBuilder implements AlgorithmBuilder<AbstractMOEAD<DoubleSoluti
     neighborSize = 20 ;
     numberOfThreads = 1 ;
     moeadVariant = variant ;
+    H1_ = 99;
+    H2_ = 0;
   }
 
   /* Getters/Setters */
@@ -95,6 +101,7 @@ public class MOEADBuilder implements AlgorithmBuilder<AbstractMOEAD<DoubleSoluti
   public MutationOperator<DoubleSolution> getMutation() {
     return mutation;
   }
+  
 
   public CrossoverOperator<DoubleSolution> getCrossover() {
     return crossover;
@@ -185,23 +192,40 @@ public class MOEADBuilder implements AlgorithmBuilder<AbstractMOEAD<DoubleSoluti
   public AbstractMOEAD<DoubleSolution> build() {
     AbstractMOEAD<DoubleSolution> algorithm = null ;
     if (moeadVariant.equals(Variant.MOEAD)) {
+    	System.out.println(Variant.MOEAD);
       algorithm = new MOEAD(problem, populationSize, resultPopulationSize, maxEvaluations, mutation,
           crossover, functionType, dataDirectory, neighborhoodSelectionProbability,
-          maximumNumberOfReplacedSolutions, neighborSize);
+          maximumNumberOfReplacedSolutions, neighborSize, H1_, H2_);
     } else if (moeadVariant.equals(Variant.ConstraintMOEAD)) {
+    	System.out.println(Variant.ConstraintMOEAD);
       algorithm =  new ConstraintMOEAD(problem, populationSize, resultPopulationSize, maxEvaluations, mutation,
           crossover, functionType, dataDirectory, neighborhoodSelectionProbability,
-          maximumNumberOfReplacedSolutions, neighborSize);
+          maximumNumberOfReplacedSolutions, neighborSize, H1_, H2_);
     } else if (moeadVariant.equals(Variant.MOEADDRA)) {
+    	System.out.println(Variant.MOEADDRA);
       algorithm =  new MOEADDRA(problem, populationSize, resultPopulationSize, maxEvaluations, mutation,
           crossover, functionType, dataDirectory, neighborhoodSelectionProbability,
-          maximumNumberOfReplacedSolutions, neighborSize);
+          maximumNumberOfReplacedSolutions, neighborSize, H1_, H2_);
     } else if (moeadVariant.equals(Variant.MOEADSTM)) {
+    	System.out.println(Variant.MOEADSTM);
         algorithm =  new MOEADSTM(problem, populationSize, resultPopulationSize, maxEvaluations, mutation,
                 crossover, functionType, dataDirectory, neighborhoodSelectionProbability,
-                maximumNumberOfReplacedSolutions, neighborSize);
+                maximumNumberOfReplacedSolutions, neighborSize, H1_, H2_);
     }
-
     return algorithm ;
   }
+
+
+  public MOEADBuilder setH1(int H1_){
+  	this.H1_ = H1_;
+
+  	return this;
+  }
+
+  public MOEADBuilder setH2(int H2_){
+	  	this.H2_ = H2_;
+
+	  	return this;
+  }
+
 }

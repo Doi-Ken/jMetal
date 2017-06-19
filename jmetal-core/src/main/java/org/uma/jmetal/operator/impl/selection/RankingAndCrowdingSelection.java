@@ -7,11 +7,15 @@
 //  but WITHOUT ANY WARRANTY; without even the implied warranty of
 //  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //  GNU Lesser General Public License for more details.
-// 
+//
 //  You should have received a copy of the GNU Lesser General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package org.uma.jmetal.operator.impl.selection;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import org.uma.jmetal.operator.SelectionOperator;
 import org.uma.jmetal.solution.Solution;
@@ -20,10 +24,6 @@ import org.uma.jmetal.util.comparator.CrowdingDistanceComparator;
 import org.uma.jmetal.util.solutionattribute.Ranking;
 import org.uma.jmetal.util.solutionattribute.impl.CrowdingDistance;
 import org.uma.jmetal.util.solutionattribute.impl.DominanceRanking;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * This class implements a selection for selecting a number of solutions from
@@ -36,6 +36,16 @@ import java.util.List;
 public class RankingAndCrowdingSelection<S extends Solution<?>>
     implements SelectionOperator<List<S>,List<S>> {
   private final int solutionsToSelect ;
+
+  String normalization;
+
+  public void setNormalization(String normalization){
+	  this.normalization = normalization;
+  }
+
+  public String getNormalization(){
+	  return normalization;
+  }
 
   /** Constructor */
   public RankingAndCrowdingSelection(int solutionsToSelect) {
@@ -73,7 +83,15 @@ public class RankingAndCrowdingSelection<S extends Solution<?>>
         addRankedSolutionsToPopulation(ranking, rankingIndex, population);
         rankingIndex++;
       } else {
-        crowdingDistance.computeDensityEstimator(ranking.getSubfront(rankingIndex));
+    	  if(getNormalization() == "normalization"){
+    		  crowdingDistance.computeNormalizedDensityEstimator(ranking.getSubfront(rankingIndex));
+    	  }
+    	  else if(getNormalization() == "nonnormalization"){
+    		  crowdingDistance.computeNonNormalizedDensityEstimator(ranking.getSubfront(rankingIndex));
+    	  }
+    	  else{
+    		  crowdingDistance.computeDensityEstimator(ranking.getSubfront(rankingIndex));
+    	  }
         addLastRankedSolutionsToPopulation(ranking, rankingIndex, population);
       }
     }

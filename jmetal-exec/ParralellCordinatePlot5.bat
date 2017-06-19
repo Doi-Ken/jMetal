@@ -1,0 +1,1 @@
+ParrallelCordinatePlot graph0.txt 5

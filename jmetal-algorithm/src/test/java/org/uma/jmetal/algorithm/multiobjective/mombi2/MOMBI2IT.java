@@ -1,5 +1,9 @@
 package org.uma.jmetal.algorithm.multiobjective.mombi2;
 
+import static org.junit.Assert.*;
+
+import java.util.List;
+
 import org.junit.Test;
 import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.algorithm.multiobjective.mombi.MOMBI2;
@@ -17,10 +21,6 @@ import org.uma.jmetal.util.AlgorithmRunner;
 import org.uma.jmetal.util.comparator.RankingAndCrowdingDistanceComparator;
 import org.uma.jmetal.util.evaluator.impl.SequentialSolutionListEvaluator;
 import org.uma.jmetal.util.pseudorandom.JMetalRandom;
-
-import java.util.List;
-
-import static org.junit.Assert.assertTrue;
 
 public class MOMBI2IT {
   Algorithm<List<DoubleSolution>> algorithm;
@@ -45,8 +45,10 @@ public class MOMBI2IT {
 
     selection = new BinaryTournamentSelection<DoubleSolution>(new RankingAndCrowdingDistanceComparator<DoubleSolution>());
 
+   /* algorithm = new MOMBI2<>(problem,400,crossover,mutation,selection,new SequentialSolutionListEvaluator<DoubleSolution>(),
+        "mombi2-weights/weight/weight_03D_12.sld");*/
     algorithm = new MOMBI2<>(problem,400,crossover,mutation,selection,new SequentialSolutionListEvaluator<DoubleSolution>(),
-        "mombi2-weights/weight/weight_03D_12.sld");
+            "mombi2-weights/weight/weight_03D_12.sld", 99, 0, 2);
     new AlgorithmRunner.Executor(algorithm).execute() ;
 
     List<DoubleSolution> population = algorithm.getResult() ;
@@ -80,8 +82,10 @@ public class MOMBI2IT {
 
     selection = new BinaryTournamentSelection<DoubleSolution>(new RankingAndCrowdingDistanceComparator<DoubleSolution>());
 
+   /* algorithm = new MOMBI2<>(problem,400,crossover,mutation,selection,new SequentialSolutionListEvaluator<DoubleSolution>(),
+        "mombi2-weights/weight/weight_03D_12.sld");*/
     algorithm = new MOMBI2<>(problem,400,crossover,mutation,selection,new SequentialSolutionListEvaluator<DoubleSolution>(),
-        "mombi2-weights/weight/weight_03D_12.sld");
+            "mombi2-weights/weight/weight_03D_12.sld", 99, 0, 2);
     new AlgorithmRunner.Executor(algorithm).execute() ;
 
     List<DoubleSolution> population = algorithm.getResult() ;

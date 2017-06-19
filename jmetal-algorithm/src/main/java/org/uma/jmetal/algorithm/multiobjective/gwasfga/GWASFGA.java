@@ -13,6 +13,8 @@
 
 package org.uma.jmetal.algorithm.multiobjective.gwasfga;
 
+import java.util.List;
+
 import org.uma.jmetal.algorithm.multiobjective.gwasfga.util.GWASFGARanking;
 import org.uma.jmetal.algorithm.multiobjective.mombi.util.ASFWASFGA;
 import org.uma.jmetal.algorithm.multiobjective.mombi.util.AbstractUtilityFunctionsSet;
@@ -25,8 +27,6 @@ import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.util.evaluator.SolutionListEvaluator;
 import org.uma.jmetal.util.solutionattribute.Ranking;
-
-import java.util.List;
 
 /**
  * This class executes the GWASFGA algorithm described in:
@@ -43,12 +43,19 @@ public class GWASFGA<S extends Solution<?>> extends WASFGA<S> {
 
   public GWASFGA(Problem<S> problem, int populationSize, int maxIterations, CrossoverOperator<S> crossoverOperator,
                  MutationOperator<S> mutationOperator, SelectionOperator<List<S>, S> selectionOperator,
-                 SolutionListEvaluator<S> evaluator) {
+                 SolutionListEvaluator<S> evaluator, int div1, int div2, int ObjectiveNumber) {
+
     super(problem, populationSize, maxIterations, crossoverOperator, mutationOperator, selectionOperator, evaluator,
         null);
+
+    VectorGenerator vg = new TwoLevelWeightVectorGenerator(div1, div2, ObjectiveNumber);
+    double [][] weights = vg.getVectors();
+    populationSize = weights.length;
+    System.out.println(populationSize);
     setMaxPopulationSize(populationSize);
 
-    double [][] weights =  WeightVector.initUniformWeights2D(0.005, getMaxPopulationSize());
+   // double [][] weights =  WeightVector.initUniformWeights2D(0.005, getMaxPopulationSize());
+
 
     int halfVectorSize = weights.length  / 2;
     int evenVectorsSize    = (weights.length%2==0) ? halfVectorSize : (halfVectorSize+1);

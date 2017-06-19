@@ -9,11 +9,16 @@
 //  but WITHOUT ANY WARRANTY; without even the implied warranty of
 //  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //  GNU Lesser General Public License for more details.
-// 
+//
 //  You should have received a copy of the GNU Lesser General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package org.uma.jmetal.qualityindicator.impl.hypervolume;
+
+import java.io.FileNotFoundException;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.uma.jmetal.qualityindicator.impl.Hypervolume;
 import org.uma.jmetal.solution.Solution;
@@ -25,11 +30,6 @@ import org.uma.jmetal.util.front.util.FrontNormalizer;
 import org.uma.jmetal.util.front.util.FrontUtils;
 import org.uma.jmetal.util.point.Point;
 import org.uma.jmetal.util.solutionattribute.impl.HypervolumeContributionAttribute;
-
-import java.io.FileNotFoundException;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * This class implements the hypervolume indicator. The code is the a Java version

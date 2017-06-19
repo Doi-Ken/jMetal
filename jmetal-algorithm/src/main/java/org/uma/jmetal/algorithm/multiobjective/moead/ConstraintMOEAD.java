@@ -13,6 +13,8 @@
 
 package org.uma.jmetal.algorithm.multiobjective.moead;
 
+import java.util.List;
+
 import org.uma.jmetal.algorithm.multiobjective.moead.util.MOEADUtils;
 import org.uma.jmetal.operator.CrossoverOperator;
 import org.uma.jmetal.operator.MutationOperator;
@@ -21,8 +23,6 @@ import org.uma.jmetal.problem.ConstrainedProblem;
 import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.solution.DoubleSolution;
 import org.uma.jmetal.util.comparator.impl.ViolationThresholdComparator;
-
-import java.util.List;
 
 /**
  * This class implements a constrained version of the MOEAD algorithm based on the one presented in
@@ -56,6 +56,25 @@ public class ConstraintMOEAD extends AbstractMOEAD<DoubleSolution>  {
     differentialEvolutionCrossover = (DifferentialEvolutionCrossover)crossoverOperator ;
     violationThresholdComparator = new ViolationThresholdComparator<DoubleSolution>() ;
   }
+
+  public ConstraintMOEAD(Problem<DoubleSolution> problem,
+	      int populationSize,
+	      int resultPopulationSize,
+	      int maxEvaluations,
+	      MutationOperator<DoubleSolution> mutation,
+	      CrossoverOperator<DoubleSolution> crossover,
+	      FunctionType functionType,
+	      String dataDirectory,
+	      double neighborhoodSelectionProbability,
+	      int maximumNumberOfReplacedSolutions,
+	      int neighborSize, int h1, int h2) {
+	    super(problem, populationSize, resultPopulationSize, maxEvaluations, crossover, mutation, functionType,
+	        dataDirectory, neighborhoodSelectionProbability, maximumNumberOfReplacedSolutions,
+	        neighborSize, h1, h2);
+
+	    differentialEvolutionCrossover = (DifferentialEvolutionCrossover)crossoverOperator ;
+	    violationThresholdComparator = new ViolationThresholdComparator<DoubleSolution>() ;
+	  }
 
   @Override public void run() {
     initializeUniformWeight();

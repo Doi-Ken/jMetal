@@ -7,19 +7,19 @@
 //  but WITHOUT ANY WARRANTY; without even the implied warranty of
 //  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //  GNU Lesser General Public License for more details.
-// 
+//
 //  You should have received a copy of the GNU Lesser General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package org.uma.jmetal.util.solutionattribute.impl;
 
-import org.uma.jmetal.solution.Solution;
-import org.uma.jmetal.util.comparator.ObjectiveComparator;
-import org.uma.jmetal.util.solutionattribute.DensityEstimator;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import org.uma.jmetal.solution.Solution;
+import org.uma.jmetal.util.comparator.ObjectiveComparator;
+import org.uma.jmetal.util.solutionattribute.DensityEstimator;
 
 /**
  * This class implements the crowding distance
@@ -91,6 +91,104 @@ public class CrowdingDistance<S extends Solution<?>>
       }
     }
   }
+
+  public void computeNormalizedDensityEstimator(List<S> solutionList) {
+	    int size = solutionList.size();
+
+	    if (size == 0) {
+	      return;
+	    }
+
+	    if (size == 1) {
+	      solutionList.get(0).setAttribute(getAttributeIdentifier(), Double.POSITIVE_INFINITY);
+	      return;
+	    }
+
+	    if (size == 2) {
+	      solutionList.get(0).setAttribute(getAttributeIdentifier(), Double.POSITIVE_INFINITY);
+	      solutionList.get(1).setAttribute(getAttributeIdentifier(), Double.POSITIVE_INFINITY);
+
+	      return;
+	    }
+
+	    // Use a new SolutionSet to avoid altering the original solutionSet
+	    List<S> front = new ArrayList<>(size);
+	    for (S solution : solutionList) {
+	      front.add(solution);
+	    }
+
+	    for (int i = 0; i < size; i++) {
+	      front.get(i).setAttribute(getAttributeIdentifier(), 0.0);
+	    }
+
+	    double distance;
+
+	    int numberOfObjectives = solutionList.get(0).getNumberOfObjectives() ;
+
+	    for (int i = 0; i < numberOfObjectives; i++) {
+	      // Sort the population by Obj n
+	      Collections.sort(front, new ObjectiveComparator<S>(i)) ;
+
+	      // Set de crowding distance
+	      front.get(0).setAttribute(getAttributeIdentifier(), Double.POSITIVE_INFINITY);
+	      front.get(size - 1).setAttribute(getAttributeIdentifier(), Double.POSITIVE_INFINITY);
+
+	      for (int j = 1; j < size - 1; j++) {
+	        distance = front.get(j + 1).getNormalizedObjective(i) - front.get(j - 1).getNormalizedObjective(i);
+	        distance += (double)front.get(j).getAttribute(getAttributeIdentifier());
+	        front.get(j).setAttribute(getAttributeIdentifier(), distance);
+	      }
+	    }
+	  }
+
+  public void computeNonNormalizedDensityEstimator(List<S> solutionList) {
+	    int size = solutionList.size();
+
+	    if (size == 0) {
+	      return;
+	    }
+
+	    if (size == 1) {
+	      solutionList.get(0).setAttribute(getAttributeIdentifier(), Double.POSITIVE_INFINITY);
+	      return;
+	    }
+
+	    if (size == 2) {
+	      solutionList.get(0).setAttribute(getAttributeIdentifier(), Double.POSITIVE_INFINITY);
+	      solutionList.get(1).setAttribute(getAttributeIdentifier(), Double.POSITIVE_INFINITY);
+
+	      return;
+	    }
+
+	    // Use a new SolutionSet to avoid altering the original solutionSet
+	    List<S> front = new ArrayList<>(size);
+	    for (S solution : solutionList) {
+	      front.add(solution);
+	    }
+
+	    for (int i = 0; i < size; i++) {
+	      front.get(i).setAttribute(getAttributeIdentifier(), 0.0);
+	    }
+
+	    double distance;
+
+	    int numberOfObjectives = solutionList.get(0).getNumberOfObjectives() ;
+
+	    for (int i = 0; i < numberOfObjectives; i++) {
+	      // Sort the population by Obj n
+	      Collections.sort(front, new ObjectiveComparator<S>(i)) ;
+
+	      // Set de crowding distance
+	      front.get(0).setAttribute(getAttributeIdentifier(), Double.POSITIVE_INFINITY);
+	      front.get(size - 1).setAttribute(getAttributeIdentifier(), Double.POSITIVE_INFINITY);
+
+	      for (int j = 1; j < size - 1; j++) {
+	        distance = front.get(j + 1).getObjective(i) - front.get(j - 1).getObjective(i);
+	        distance += (double)front.get(j).getAttribute(getAttributeIdentifier());
+	        front.get(j).setAttribute(getAttributeIdentifier(), distance);
+	      }
+	    }
+	  }
 
   @Override
   public Object getAttributeIdentifier() {

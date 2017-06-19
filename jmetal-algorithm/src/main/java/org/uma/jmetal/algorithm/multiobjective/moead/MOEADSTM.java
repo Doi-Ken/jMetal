@@ -13,6 +13,10 @@
 
 package org.uma.jmetal.algorithm.multiobjective.moead;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
 import org.uma.jmetal.algorithm.multiobjective.moead.util.MOEADUtils;
 import org.uma.jmetal.operator.CrossoverOperator;
 import org.uma.jmetal.operator.MutationOperator;
@@ -21,10 +25,6 @@ import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.solution.DoubleSolution;
 import org.uma.jmetal.util.JMetalException;
 import org.uma.jmetal.util.pseudorandom.JMetalRandom;
-
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Class implementing the MOEA/D-STM algorithm described in :
@@ -64,6 +64,26 @@ public class MOEADSTM extends AbstractMOEAD<DoubleSolution> {
 
 		randomGenerator = JMetalRandom.getInstance();
 	}
+	public MOEADSTM(Problem<DoubleSolution> problem, int populationSize, int resultPopulationSize, int maxEvaluations,
+			MutationOperator<DoubleSolution> mutation, CrossoverOperator<DoubleSolution> crossover,
+			FunctionType functionType, String dataDirectory, double neighborhoodSelectionProbability,
+			int maximumNumberOfReplacedSolutions, int neighborSize, int h1, int h2) {
+		super(problem, populationSize, resultPopulationSize, maxEvaluations, crossover, mutation, functionType,
+				dataDirectory, neighborhoodSelectionProbability, maximumNumberOfReplacedSolutions, neighborSize, h1, h2);
+
+		differentialEvolutionCrossover = (DifferentialEvolutionCrossover) crossoverOperator;
+
+		savedValues = new DoubleSolution[populationSize];
+		utility 	= new double[populationSize];
+		frequency 	= new int[populationSize];
+		for (int i = 0; i < utility.length; i++) {
+		utility[i] 	 = 1.0;
+		frequency[i] = 0;
+		}
+
+		randomGenerator = JMetalRandom.getInstance();
+		}
+
 
 	@Override
 	public void run() {
@@ -72,6 +92,7 @@ public class MOEADSTM extends AbstractMOEAD<DoubleSolution> {
 		initializeNeighborhood();
 		initializeIdealPoint();
 		initializeNadirPoint();
+		computeMaxPoint();
 
 		int generation = 0;
 		evaluations = populationSize;
@@ -79,6 +100,14 @@ public class MOEADSTM extends AbstractMOEAD<DoubleSolution> {
 			int[] permutation = new int[populationSize];
 			MOEADUtils.randomPermutation(permutation, populationSize);
 			offspringPopulation.clear();
+
+			 if(normalization){
+				 computeMaxPoint();
+				 initializeNadirPoint();
+					computeExtremePoints();
+					computeIntercepts();
+					normalizePopulation();
+		      }
 
 			for (int i = 0; i < populationSize; i++) {
 				int subProblemId = permutation[i];
@@ -97,7 +126,14 @@ public class MOEADSTM extends AbstractMOEAD<DoubleSolution> {
 				evaluations++;
 
 				updateIdealPoint(child);
-				updateNadirPoint(child);
+				if(!normalization){
+					updateNadirPoint(child);
+				}
+
+				if(normalization){
+					  //	initializeNormalizedObjectives();
+		        	normalizeOnlyIndividual(child);
+		        }
 				updateNeighborhood(child, subProblemId, neighborType);
 
 				offspringPopulation.add(child);
@@ -107,7 +143,12 @@ public class MOEADSTM extends AbstractMOEAD<DoubleSolution> {
 			jointPopulation.clear();
 			jointPopulation.addAll(population);
 			jointPopulation.addAll(offspringPopulation);
+			if(normalization){
+				for(int j = 0;j < jointPopulation.size();j++){
+					updateNormalizedObjective(jointPopulation.get(j));
+				}
 
+	        }
 			// selection process
 			stmSelection();
 
@@ -342,9 +383,15 @@ public class MOEADSTM extends AbstractMOEAD<DoubleSolution> {
 		double[] vecProj = new double[problem.getNumberOfObjectives()];
 
 		// vecInd has been normalized to the range [0,1]
+		if(!normalization){
 		for (int i = 0; i < problem.getNumberOfObjectives(); i++)
 			vecInd[i] = (individual.getObjective(i) - idealPoint[i]) / (nadirPoint[i] - idealPoint[i]);
+		}
+		else{
+			for (int i = 0; i < problem.getNumberOfObjectives(); i++)
+				vecInd[i] = individual.getNormalizedObjective(i);
 
+		}
 		scale = innerproduct(vecInd, lambda) / innerproduct(lambda, lambda);
 		for (int i = 0; i < problem.getNumberOfObjectives(); i++)
 			vecProj[i] = vecInd[i] - scale * lambda[i];
@@ -368,10 +415,19 @@ public class MOEADSTM extends AbstractMOEAD<DoubleSolution> {
 		double[] vecInd  	   = new double[problem.getNumberOfObjectives()];
 		double[] normalizedObj = new double[problem.getNumberOfObjectives()];
 
+		if(!normalization){
 		for (int i = 0; i < problem.getNumberOfObjectives(); i++)
 			distanceSum += individual.getObjective(i);
 		for (int i = 0; i < problem.getNumberOfObjectives(); i++)
 			normalizedObj[i] = individual.getObjective(i) / distanceSum;
+		}
+		else{
+			for (int i = 0; i < problem.getNumberOfObjectives(); i++)
+				distanceSum += individual.getNormalizedObjective(i);
+			for (int i = 0; i < problem.getNumberOfObjectives(); i++)
+				normalizedObj[i] = individual.getNormalizedObjective(i) / distanceSum;
+		}
+
 		for (int i = 0; i < problem.getNumberOfObjectives(); i++)
 			vecInd[i] = normalizedObj[i] - lambda[i];
 

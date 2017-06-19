@@ -1,12 +1,16 @@
 package org.uma.jmetal.algorithm.multiobjective.mombi.util;
 
-import org.uma.jmetal.solution.Solution;
-import org.uma.jmetal.util.JMetalException;
-
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
+
+import org.uma.jmetal.solution.Solution;
+import org.uma.jmetal.util.JMetalException;
 
 
 
@@ -21,7 +25,8 @@ public abstract class AbstractUtilityFunctionsSet<S extends Solution<?>> impleme
 
 	private List<List<Double>> weightVectors;
 	private int vectorSize;
-	
+	private String scalarizingfunction = "asf";
+
 	public AbstractUtilityFunctionsSet(double [][] weights) {
 		this.weightVectors = new ArrayList<>();
 		for (int i = 0; i < weights.length; i++) {
@@ -33,9 +38,9 @@ public abstract class AbstractUtilityFunctionsSet<S extends Solution<?>> impleme
 		if (this.weightVectors.size() > 0) {
 			this.vectorSize = this.weightVectors.get(0).size();
 		}
-				
+
 	}
-	
+
 	public AbstractUtilityFunctionsSet(String file_path) {
 		loadWeightsFromFile(file_path);
 	}
@@ -47,14 +52,14 @@ public abstract class AbstractUtilityFunctionsSet<S extends Solution<?>> impleme
 	public int getSize() {
 		return this.weightVectors.size();
 	}
-	
+
 	/**
-	 * Returns the number of components for all weight vectors 
+	 * Returns the number of components for all weight vectors
 	 */
 	public int getVectorSize() {
 		return this.vectorSize;
 	}
-	
+
 	/**
 	 * Returns a given weight vector
 	 */
@@ -64,7 +69,7 @@ public abstract class AbstractUtilityFunctionsSet<S extends Solution<?>> impleme
 		}
 		return this.weightVectors.get(index);
 	}
-	
+
 	/**
 	 * Evaluates a solution using all the utility functions stored in this set
 	 * @param solution
@@ -77,7 +82,7 @@ public abstract class AbstractUtilityFunctionsSet<S extends Solution<?>> impleme
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Evaluates a solution using the i-th utility function stored in this set
 	 * @param solution
@@ -86,17 +91,24 @@ public abstract class AbstractUtilityFunctionsSet<S extends Solution<?>> impleme
 	 */
 	public abstract Double evaluate(S solution, int vector);
 
+	public void setScalarizingFucntion(String scalarizingfunction){
+		this.scalarizingfunction = scalarizingfunction;
+	}
+
+	public String getScalarizingFunction(){
+		return this.scalarizingfunction;
+	}
 	/**
-	 * Reads a set of weight vectors from a file. 
+	 * Reads a set of weight vectors from a file.
 	 * The expected format for the file is as follows.
 	 * The first line should start with at least the following three tokens
 	 * # <number_of_vectors> <number_of_obectives>
-	 * Any other token on this line will be ignored. 
+	 * Any other token on this line will be ignored.
 	 * <number_of_vectors> indicates how many weight vectors are included in this file
 	 * <number_of_objectives> indicates how many component has each included vector
 	 *
 	 * Each of the following lines of the file represents a weight vector of at least
-	 * <number_of_objectives> components 
+	 * <number_of_objectives> components
 	 * If more components are provided, they will be ignored by the program
 	 *
 	 * @param filePath The path in the file system of the file containing the weight vectors
