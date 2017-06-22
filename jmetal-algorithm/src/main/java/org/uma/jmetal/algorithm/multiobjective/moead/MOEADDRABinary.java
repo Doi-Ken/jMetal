@@ -123,6 +123,7 @@ public class MOEADDRABinary extends AbstractMOEAD<BinarySolution> {
         if(normalization){
         //	initializeNormalizedObjectives();
           	normalizeOnlyIndividual(child);
+        	normalizePopulation();
         }
         updateNeighborhood(child, subProblemId, neighborType);
       }

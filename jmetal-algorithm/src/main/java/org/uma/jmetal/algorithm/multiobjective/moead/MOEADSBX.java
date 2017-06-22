@@ -150,6 +150,7 @@ public class MOEADSBX extends AbstractMOEAD<DoubleSolution> {
         if(normalization){
         //	initializeNormalizedObjectives();
         	normalizeOnlyIndividual(child);
+        	normalizePopulation();
         }
         updateNeighborhood(child, subProblemId, neighborType);
       }

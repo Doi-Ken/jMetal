@@ -126,6 +126,7 @@ public class MOEADSTMBinary extends AbstractMOEAD<BinarySolution> {
 				if(normalization){
 					  //	initializeNormalizedObjectives();
 		        	normalizeOnlyIndividual(child);
+		        	normalizePopulation();
 		        }
 				updateNeighborhood(child, subProblemId, neighborType);
 

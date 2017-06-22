@@ -130,6 +130,7 @@ public class MOEADDRA extends AbstractMOEAD<DoubleSolution> {
         if(normalization){
         //	initializeNormalizedObjectives();
           	normalizeOnlyIndividual(child);
+        	normalizePopulation();
         }
         updateNeighborhood(child, subProblemId, neighborType);
       }

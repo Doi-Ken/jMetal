@@ -128,11 +128,13 @@ public class MOEADSTM extends AbstractMOEAD<DoubleSolution> {
 				updateIdealPoint(child);
 				if(!normalization){
 					updateNadirPoint(child);
+
 				}
 
 				if(normalization){
 					  //	initializeNormalizedObjectives();
 		        	normalizeOnlyIndividual(child);
+		        	normalizePopulation();
 		        }
 				updateNeighborhood(child, subProblemId, neighborType);
 
